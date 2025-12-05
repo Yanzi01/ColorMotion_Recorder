@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ColorMotion Recorder</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+    #artCanvas {
+      position: fixed;
+      inset: 0;
+      display: block;
+    }
+    #startBtn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      padding: 10px 22px;
+      border-radius: 999px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff3366, #ffcc33);
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    #startBtn:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="artCanvas"></canvas>
+  <button id="startBtn">Start recording</button>
+
+  <!-- IMPORTANT: defer so DOM exists before main.js runs -->
+  <script src="main.js" defer></script>
+</body>
+</html>

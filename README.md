@@ -165,7 +165,6 @@ The goal is to explore how human movement can become a visual language, transfor
 
 - **ChatGPT (OpenAI)**  
   Used as a development assistant for documentation guidance, implementation support, and troubleshooting.  
-  https://platform.openai.com/docs  
   https://openai.com/chatgpt
 ---
 

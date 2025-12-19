@@ -9,6 +9,8 @@
 
 🔗 https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
 
+>>For best performance, use Chrome
+
 ---
 🕹 How to Use
 	1.	Stand in front of the camera

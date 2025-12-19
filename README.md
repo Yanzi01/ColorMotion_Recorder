@@ -123,9 +123,9 @@ http://localhost:8000/record/index.html
 Allow camera access when prompted.
 
 Notes
-	•	Movement interaction requires a webcam
-	•	The project will not work if opened directly as a local file
-	•	Use Chrome for best results
+	-	Movement interaction requires a webcam
+	-	The project will not work if opened directly as a local file
+	-	Use Chrome for best results
 
 ⸻
 

@@ -98,6 +98,7 @@ Camera access requires **HTTPS or localhost**.
 
 ```bash
 python3 -m http.server 8000
+<<'END''
 
 Then open the project in your browser:
 

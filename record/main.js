@@ -1,6 +1,6 @@
 // - Wave LEFT/RIGHT to start recording
 // - Wave UP/DOWN to change color palette 
-// - 3s recording with countdown, timer, and replay
+// - 3s recording with countdown, timer, and replay of the recording
 
 window.addEventListener('DOMContentLoaded', () => {
   const artCanvas = document.getElementById('artCanvas');
@@ -66,7 +66,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function pickRandomPalette() {
     const now = performance.now();
-    // cooldown to avoid changing too fast
+    // cooldown to avoid the palette changing too fast, which might be hard to control
     if (now - state.lastPaletteChange < 400) return;
 
     const old = state.paletteIndex;
@@ -79,11 +79,11 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log('Palette changed to', idx);
   }
 
-  //  Webcam + motion 
+  //  Webcam + motion detection
   let camStream = null;
   let camVideo = null;
 
-  // Motion detection canvas (smaller than main canvas)
+  // Motion detection canvas 
   const motionW = 240;
   const motionH = 180;
   const motionCanvas = document.createElement('canvas');
@@ -126,7 +126,7 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log('Camera started.');
   }
 
-  // Compute motion mask (difference vs previous frame)
+  // Compute motion mask (difference vs previous frame) so we can detect motion points
   function computeMotionField() {
     if (!camVideo || camVideo.readyState < 2) {
       return { strength: 0, points: [] };
@@ -167,10 +167,10 @@ window.addEventListener('DOMContentLoaded', () => {
     return { strength, points };
   }
 
-  // LEFT/RIGHT wave to start recording
+  // LEFT/RIGHT wave to start recording 
 function detectHorizontalWave(points, strength) {
   // Hard gate: ignore tiny/no movement
-  if (strength < 0.12) return false;      // raise if still too sensitive (0.15)
+  if (strength < 0.12) return false;      // raise if still too sensitive so user can control better
   if (points.length < 220) return false;  // require enough motion pixels
 
   // Compute centroid X
@@ -187,7 +187,7 @@ function detectHorizontalWave(points, strength) {
 
   if (state.horizontalHistory.length < 10) return false;
 
-  // Range
+  // Range is maxX - minX
   let minX = Infinity, maxX = -Infinity;
   for (const e of state.horizontalHistory) {
     if (e.x < minX) minX = e.x;
@@ -195,7 +195,7 @@ function detectHorizontalWave(points, strength) {
   }
   const range = maxX - minX;
 
-  // Direction changes (ignore tiny jitter)
+  // Direction changes (ignore tiny jitter) so it doesn't accidentally trigger
   let lastX = state.horizontalHistory[0].x;
   let lastSign = 0;
   let dirChanges = 0;
@@ -215,8 +215,8 @@ function detectHorizontalWave(points, strength) {
     lastX = x;
   }
 
-  const minRange = 0.55;     // big wave
-  const minDirChanges = 2;   // left→right→left
+  const minRange = 0.6;     // big wave
+  const minDirChanges = 4;   // left right left right
   const cooldownMs = 1800;
 
   if (range > minRange && dirChanges >= minDirChanges && (now - state.lastWaveStart > cooldownMs)) {
@@ -535,13 +535,12 @@ function detectHorizontalWave(points, strength) {
       // always show live silhouette when not in playback
       drawSilhouette(points);
 
-      // gesture: vertical wave  change palette (allowed in idle, countdown, recording)
+      // vertical wave  change palette (allowed in idle, countdown, recording)
       if (detectVerticalWave(points, strength)) {
   pickRandomPalette();
 }
 
       if (state.mode === 'idle') {
-        // idle hints
         state.hintTime += dt;
         drawIdleHintsWithFade(state.hintTime);
 

@@ -215,7 +215,7 @@ window.addEventListener('DOMContentLoaded', () => {
       lastX = x;
     }
 
-    const minRange = 0.2;     // big wave
+    const minRange = 0.4;     // big wave
     const minDirChanges = 3;   // left right left right
     const cooldownMs = 1000;
 

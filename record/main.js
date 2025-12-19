@@ -52,16 +52,16 @@ window.addEventListener('DOMContentLoaded', () => {
   // Color Palettes 
   // 10 palette ranges 
   const colorPalettes = [
-    { startHue:   0, endHue:  60 },  // red yellow
-    { startHue:  40, endHue: 140 },  // orange  green
+    { startHue: 0, endHue: 60 },  // red yellow
+    { startHue: 40, endHue: 140 },  // orange  green
     { startHue: 120, endHue: 220 },  // green blue
     { startHue: 200, endHue: 300 },  // blue  magenta
     { startHue: 260, endHue: 360 },  // purple  red
-    { startHue: 300, endHue:  60 },  // magenta  yellow 
+    { startHue: 300, endHue: 60 },  // magenta  yellow 
     { startHue: 180, endHue: 300 },  // cyan  magenta
-    { startHue:  20, endHue: 200 },  // warm cool
-    { startHue:  80, endHue: 260 },  // lime purple
-    { startHue: 330, endHue:  90 }   // pink orange
+    { startHue: 20, endHue: 200 },  // warm cool
+    { startHue: 80, endHue: 260 },  // lime purple
+    { startHue: 330, endHue: 90 }   // pink orange
   ];
 
   function pickRandomPalette() {
@@ -93,7 +93,7 @@ window.addEventListener('DOMContentLoaded', () => {
   let prevLuma = null;
 
   async function setupCamera() {
-    if (camStream) return; 
+    if (camStream) return;
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       alert('Camera not supported in this browser.');
@@ -101,16 +101,16 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-     camStream = await navigator.mediaDevices.getUserMedia({
-  video: {
-    width: 640,
-    height: 480,
-    frameRate: { ideal: 60 },
-    latency: { ideal: 0 },
-    facingMode: "user"
-  },
-  audio: false
-});
+      camStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: 640,
+          height: 480,
+          frameRate: { ideal: 60 },
+          latency: { ideal: 0 },
+          facingMode: "user"
+        },
+        audio: false
+      });
     } catch (err) {
       console.error('getUserMedia failed:', err);
       alert('Could not access camera: ' + err.message);
@@ -168,91 +168,131 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // LEFT/RIGHT wave to start recording 
-function detectHorizontalWave(points, strength) {
-  // Hard gate: ignore tiny/no movement
-  if (strength < 0.12) return false;      // raise if still too sensitive so user can control better
-  if (points.length < 220) return false;  // require enough motion pixels
+  function detectHorizontalWave(points, strength) {
+    // Hard gate: ignore tiny/no movement
+    if (strength < 0.12) return false;      // raise if still too sensitive so user can control better
+    if (points.length < 220) return false;  // require enough motion pixels
 
-  // Compute centroid X
-  let sumX = 0;
-  for (const p of points) sumX += p.x;
-  const cx = sumX / points.length;
+    // Compute centroid X
+    let sumX = 0;
+    for (const p of points) sumX += p.x;
+    const cx = sumX / points.length;
 
-  const now = performance.now();
-  state.horizontalHistory.push({ time: now, x: cx });
+    const now = performance.now();
+    state.horizontalHistory.push({ time: now, x: cx });
 
-  // keep last ~800ms
-  const cutoff = now - 800;
-  state.horizontalHistory = state.horizontalHistory.filter(e => e.time > cutoff);
+    // keep last ~800ms
+    const cutoff = now - 800;
+    state.horizontalHistory = state.horizontalHistory.filter(e => e.time > cutoff);
 
-  if (state.horizontalHistory.length < 10) return false;
+    if (state.horizontalHistory.length < 10) return false;
 
-  // Range is maxX - minX
-  let minX = Infinity, maxX = -Infinity;
-  for (const e of state.horizontalHistory) {
-    if (e.x < minX) minX = e.x;
-    if (e.x > maxX) maxX = e.x;
-  }
-  const range = maxX - minX;
+    // Range is maxX - minX
+    let minX = Infinity, maxX = -Infinity;
+    for (const e of state.horizontalHistory) {
+      if (e.x < minX) minX = e.x;
+      if (e.x > maxX) maxX = e.x;
+    }
+    const range = maxX - minX;
 
-  // Direction changes (ignore tiny jitter) so it doesn't accidentally trigger
-  let lastX = state.horizontalHistory[0].x;
-  let lastSign = 0;
-  let dirChanges = 0;
+    // Direction changes (ignore tiny jitter) so it doesn't accidentally trigger
+    let lastX = state.horizontalHistory[0].x;
+    let lastSign = 0;
+    let dirChanges = 0;
 
-  for (let i = 1; i < state.horizontalHistory.length; i++) {
-    const x = state.horizontalHistory[i].x;
-    const dx = x - lastX;
+    for (let i = 1; i < state.horizontalHistory.length; i++) {
+      const x = state.horizontalHistory[i].x;
+      const dx = x - lastX;
 
-    if (Math.abs(dx) < 0.03) { // ignore <3% width jitter
+      if (Math.abs(dx) < 0.03) { // ignore <3% width jitter
+        lastX = x;
+        continue;
+      }
+
+      const sign = dx > 0 ? 1 : -1;
+      if (lastSign !== 0 && sign !== lastSign) dirChanges++;
+      lastSign = sign;
       lastX = x;
-      continue;
     }
 
-    const sign = dx > 0 ? 1 : -1;
-    if (lastSign !== 0 && sign !== lastSign) dirChanges++;
-    lastSign = sign;
-    lastX = x;
-  }
+    const minRange = 0.6;     // big wave
+    const minDirChanges = 4;   // left right left right
+    const cooldownMs = 1800;
 
-  const minRange = 0.6;     // big wave
-  const minDirChanges = 4;   // left right left right
-  const cooldownMs = 1800;
-
-  if (range > minRange && dirChanges >= minDirChanges && (now - state.lastWaveStart > cooldownMs)) {
-    state.lastWaveStart = now;
-    console.log('Horizontal wave detected (gated)');
-    return true;
+    if (range > minRange && dirChanges >= minDirChanges && (now - state.lastWaveStart > cooldownMs)) {
+      state.lastWaveStart = now;
+      console.log('Horizontal wave detected (gated)');
+      return true;
+    }
+    return false;
   }
-  return false;
-}
 
   // UP/DOWN wave to change colors
   function detectVerticalWave(points, strength) {
-  if (strength < 0.10) return false;
-  if (points.length < 180) return false;
+    if (strength < 0.10) return false;
+    if (points.length < 180) return false;
 
-  let sumY = 0;
-  for (const p of points) sumY += p.y;
-  const cy = sumY / points.length;
+    let sumY = 0;
+    for (const p of points) sumY += p.y;
+    const cy = sumY / points.length;
 
-  const now = performance.now();
-  state.verticalHistory.push({ time: now, y: cy });
+    const now = performance.now();
+    state.verticalHistory.push({ time: now, y: cy });
 
-  const cutoff = now - 700;
-  state.verticalHistory = state.verticalHistory.filter(e => e.time > cutoff);
+    const cutoff = now - 700;
+    state.verticalHistory = state.verticalHistory.filter(e => e.time > cutoff);
 
-  if (state.verticalHistory.length < 8) return false;
+    if (state.verticalHistory.length < 8) return false;
 
-  let minY = Infinity, maxY = -Infinity;
-  for (const e of state.verticalHistory) {
-    if (e.y < minY) minY = e.y;
-    if (e.y > maxY) maxY = e.y;
+    let minY = Infinity, maxY = -Infinity;
+    for (const e of state.verticalHistory) {
+      if (e.y < minY) minY = e.y;
+      if (e.y > maxY) maxY = e.y;
+    }
+
+    return (maxY - minY) > 0.22;
   }
 
-  return (maxY - minY) > 0.22;
-}
+  // turn motion points into colored silhouette points
+  //center of body = one color, hands/fingers = other colors
+  function computeMotionColor(points) {
+    if (!points.length) return [];
 
+    // find rough center of motion (body center)
+    let cx = 0, cy = 0;
+    for (const p of points) {
+      cx += p.x;
+      cy += p.y;
+    }
+    cx /= points.length;
+    cy /= points.length;
+
+    const palette = colorPalettes[state.paletteIndex];
+    let startHue = palette.startHue;
+    let endHue = palette.endHue;
+
+    // handle hue wrap around 360
+    let range = endHue - startHue;
+    if (range > 180) range -= 360;
+    if (range < -180) range += 360;
+
+    // color each motion point
+    return points.map(p => {
+      const dx = p.x - cx;
+      const dy = p.y - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // farther from center = more hand/finger
+      const t = Math.min(1, dist * 6);
+
+      return {
+        x: p.x,
+        y: p.y,
+        distNorm: t,
+        hue: (startHue + (1 - t) * range + 360) % 360
+      };
+    });
+  }
   function drawSilhouette(points) {
     const w = artCanvas.width;
     const h = artCanvas.height;
@@ -537,8 +577,8 @@ function detectHorizontalWave(points, strength) {
 
       // vertical wave  change palette (allowed in idle, countdown, recording)
       if (detectVerticalWave(points, strength)) {
-  pickRandomPalette();
-}
+        pickRandomPalette();
+      }
 
       if (state.mode === 'idle') {
         state.hintTime += dt;
@@ -593,7 +633,7 @@ function detectHorizontalWave(points, strength) {
   }
 
   requestAnimationFrame(loop);
-    // start camera immediately on load for better user experience
+  // start camera immediately on load for better user experience
   (async () => {
     try {
       await setupCamera();

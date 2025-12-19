@@ -1,7 +1,5 @@
-// ColorMotion Recorder - Gesture + Palette Edition
-// - Webcam → colored human silhouette (no real image)
 // - Wave LEFT/RIGHT to start recording
-// - Wave UP/DOWN to change color palette (10 options)
+// - Wave UP/DOWN to change color palette 
 // - 3s recording with countdown, timer, and replay
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -33,7 +31,7 @@ window.addEventListener('DOMContentLoaded', () => {
   resize();
 
   const state = {
-    mode: 'idle',          // 'idle' | 'countdown' | 'recording' | 'transition' | 'playback'
+    mode: 'idle',          // idle | countdown | recording | transition | playback
     countdown: 0,
     transition: 0,         // 1 → 0 during "REPLAY" fade
     recordRemaining: 0,    // seconds left in current recording
@@ -51,24 +49,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
   let lastTime = 0;
 
-  // ----------------- Color Palettes -----------------
-  // 10 palette ranges (hue in degrees)
+  // Color Palettes 
+  // 10 palette ranges 
   const colorPalettes = [
-    { startHue:   0, endHue:  60 },  // red → yellow
-    { startHue:  40, endHue: 140 },  // orange → green
-    { startHue: 120, endHue: 220 },  // green → blue
-    { startHue: 200, endHue: 300 },  // blue → magenta
-    { startHue: 260, endHue: 360 },  // purple → red
-    { startHue: 300, endHue:  60 },  // magenta → yellow (wrap)
-    { startHue: 180, endHue: 300 },  // cyan → magenta
-    { startHue:  20, endHue: 200 },  // warm → cool
-    { startHue:  80, endHue: 260 },  // lime → purple
-    { startHue: 330, endHue:  90 }   // pink → orange
+    { startHue:   0, endHue:  60 },  // red yellow
+    { startHue:  40, endHue: 140 },  // orange  green
+    { startHue: 120, endHue: 220 },  // green blue
+    { startHue: 200, endHue: 300 },  // blue  magenta
+    { startHue: 260, endHue: 360 },  // purple  red
+    { startHue: 300, endHue:  60 },  // magenta  yellow 
+    { startHue: 180, endHue: 300 },  // cyan  magenta
+    { startHue:  20, endHue: 200 },  // warm cool
+    { startHue:  80, endHue: 260 },  // lime purple
+    { startHue: 330, endHue:  90 }   // pink orange
   ];
 
   function pickRandomPalette() {
     const now = performance.now();
-    // small cooldown to avoid changing too fast
+    // cooldown to avoid changing too fast
     if (now - state.lastPaletteChange < 400) return;
 
     const old = state.paletteIndex;
@@ -81,11 +79,11 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log('Palette changed to', idx);
   }
 
-  // ----------------- Webcam + motion -----------------
+  //  Webcam + motion 
   let camStream = null;
   let camVideo = null;
 
-  // Higher resolution mask → better finger detail
+  // Motion detection canvas (smaller than main canvas)
   const motionW = 160;
   const motionH = 120;
   const motionCanvas = document.createElement('canvas');
@@ -95,7 +93,7 @@ window.addEventListener('DOMContentLoaded', () => {
   let prevLuma = null;
 
   async function setupCamera() {
-    if (camStream) return; // already set up
+    if (camStream) return; 
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       alert('Camera not supported in this browser.');
@@ -163,13 +161,11 @@ window.addEventListener('DOMContentLoaded', () => {
     return { strength, points };
   }
 
-  // ----------------- Gesture detection -----------------
   // LEFT/RIGHT wave to start recording
-  // LEFT/RIGHT wave to start recording (needs big, back-and-forth motion)
 function detectHorizontalWave(points) {
   if (!points.length) return false;
 
-  // 1) Compute centroid X
+  // Compute centroid X
   let sumX = 0;
   for (const p of points) sumX += p.x;
   const cx = sumX / points.length;
@@ -183,7 +179,7 @@ function detectHorizontalWave(points) {
 
   if (state.horizontalHistory.length < 8) return false;
 
-  // 2) Range of motion (how far it traveled horizontally)
+  // Range of motion (how far it traveled horizontally)
   let minX = Infinity;
   let maxX = -Infinity;
   for (const e of state.horizontalHistory) {
@@ -192,7 +188,7 @@ function detectHorizontalWave(points) {
   }
   const range = maxX - minX;
 
-  // 3) Count direction changes (must actually wave, not just move one way)
+  //  Count direction changes (must actually wave, not just move one way)
   let lastX = state.horizontalHistory[0].x;
   let lastSign = 0;
   let dirChanges = 0;
@@ -212,9 +208,9 @@ function detectHorizontalWave(points) {
     lastX = x;
   }
 
-  // Tune these if needed:
-  const minRange = 0.50;      // need to move at least 30% of screen width
-  const minDirChanges = 4;    // e.g. left→right→left
+ 
+  const minRange = 0.50;      // need to move at least 50% of screen width
+  const minDirChanges = 4;    // left right left right
 
   if (
     range > minRange &&
@@ -254,7 +250,7 @@ function detectHorizontalWave(points) {
 
     const range = maxY - minY;
 
-    // require clear up/down motion; tweak 0.20 if needed
+    // require clear up/down motion
     if (range > 0.20) {
       console.log('Vertical wave detected (palette change)');
       return true;
@@ -262,7 +258,7 @@ function detectHorizontalWave(points) {
     return false;
   }
 
-  // ----------------- Silhouette rendering -----------------
+  // Silhouette rendering 
   // color motion points by distance from motion center using current palette
   function computeMotionColor(points) {
     if (points.length === 0) return [];
@@ -289,9 +285,9 @@ function detectHorizontalWave(points) {
     for (const p of points) {
       const dx = p.x - cx;
       const dy = p.y - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy); // 0..something
+      const dist = Math.sqrt(dx * dx + dy * dy); 
 
-      const t = Math.min(1, dist * 4); // normalize 0..1
+      const t = Math.min(1, dist * 4); 
 
       const hue = (startHue + (1 - t) * range + 360) % 360;
 
@@ -309,7 +305,7 @@ function detectHorizontalWave(points) {
     const w = artCanvas.width;
     const h = artCanvas.height;
 
-    // clear → crisp camera-like motion (no trailing)
+    // clear crisp camera-like motion 
     artCtx.fillStyle = 'black';
     artCtx.fillRect(0, 0, w, h);
 
@@ -350,12 +346,12 @@ function detectHorizontalWave(points) {
     artCtx.globalCompositeOperation = 'source-over';
   }
 
-  // ----------------- UI Overlays (uiCanvas only) -----------------
+  //  UI Overlays 
   function clearUI() {
     uiCtx.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
   }
 
-  // Idle hints: how to interact
+  // Instructions on how to use
   function drawIdleHintsWithFade(t) {
     const w = uiCanvas.width;
     const h = uiCanvas.height;
@@ -377,7 +373,7 @@ function detectHorizontalWave(points) {
     uiCtx.restore();
   }
 
-  // Countdown: "Record in" + big fading 3/2/1 in center
+  // Countdown: "Record in" + 3/2/1 in center
   function drawCountdownOverlay() {
     const w = uiCanvas.width;
     const h = uiCanvas.height;
@@ -387,7 +383,7 @@ function detectHorizontalWave(points) {
 
     const sec = Math.max(0, state.countdown);
     const num = Math.max(1, Math.ceil(sec));
-    const phase = sec - Math.floor(sec); // 0..1
+    const phase = sec - Math.floor(sec);
     const alpha = 1 - phase;             // fade out
 
     uiCtx.fillStyle = '#ffffff';
@@ -403,7 +399,7 @@ function detectHorizontalWave(points) {
     uiCtx.restore();
   }
 
-  // Recording timer overlay: top-right, gradient pill
+  // Recording timer overlay: top-right
   function drawRecordingOverlay() {
     const w = uiCanvas.width;
     const h = uiCanvas.height;
@@ -470,7 +466,7 @@ function detectHorizontalWave(points) {
     uiCtx.restore();
   }
 
-  // ----------------- Recording / playback -----------------
+  // Recording / playback 
   let recorder = null;
   let recordedChunks = [];
   let playbackVideo = null;
@@ -547,7 +543,7 @@ function detectHorizontalWave(points) {
     artCtx.drawImage(playbackVideo, 0, 0, artCanvas.width, artCanvas.height);
   }
 
-  // ----------------- Button (optional backup) -----------------
+  //  Button (optional backup) 
   // Clicking still works as an alternative to waving
   startBtn.addEventListener('click', async () => {
     if (state.mode !== 'idle') return;
@@ -571,7 +567,7 @@ function detectHorizontalWave(points) {
     state.hintTime = 0;
   });
 
-  // ----------------- Main loop -----------------
+  // Main loop 
   function loop(timestamp) {
     const dt = (timestamp - lastTime) * 0.001 || 0;
     lastTime = timestamp;
@@ -587,7 +583,7 @@ function detectHorizontalWave(points) {
       // always show live silhouette when not in playback
       drawSilhouette(points);
 
-      // gesture: vertical wave → change palette (allowed in idle, countdown, recording)
+      // gesture: vertical wave  change palette (allowed in idle, countdown, recording)
       if (detectVerticalWave(points)) {
         pickRandomPalette();
       }
@@ -597,7 +593,7 @@ function detectHorizontalWave(points) {
         state.hintTime += dt;
         drawIdleHintsWithFade(state.hintTime);
 
-        // gesture: horizontal wave → start countdown
+        // gesture: horizontal wave start countdown
         if (detectHorizontalWave(points)) {
           state.mode = 'countdown';
           state.countdown = 3.0;
@@ -646,12 +642,11 @@ function detectHorizontalWave(points) {
   }
 
   requestAnimationFrame(loop);
-    // Try to start camera immediately on load (no click needed)
+    // start camera immediately on load for better user experience
   (async () => {
     try {
       await setupCamera();
       console.log('Camera ready on load.');
-      // hide start button if you don't want it
       startBtn.style.display = 'none';
     } catch (err) {
       console.error('Auto camera setup failed:', err);

@@ -7,7 +7,7 @@
 
 ---
 
-## ✨ Features
+## Features
 
 - **Gesture-controlled interaction**
   - **Wave LEFT ↔ RIGHT** → Start a 3-second recording
@@ -52,7 +52,7 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 
 ---
 
-### 🖼 Screenshot
+### Screenshot
 
 **Live Color Silhouette**
 
@@ -60,7 +60,7 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 
 ---
 
-### 🧭 Instruction Panel
+### Instruction Panel
 
 **Idle screen showing gesture instructions**
 
@@ -68,7 +68,7 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 
 ---
 
-### 🎬 Demo Videos
+### Demo Videos
 
 - **🎥 Recording*  
   [record/demo/record.mp4](record/demo/record.gif
@@ -98,11 +98,13 @@ Camera access requires **HTTPS or localhost**.
 
 ```bash
 python3 -m http.server 8000
-<<'END''
+```
 
 Then open the project in your browser:
 
+```bash
 http://localhost:8000/record/index.html
+```
 
 Allow camera access when prompted.
 
@@ -120,15 +122,15 @@ Allow camera access when prompted.
 
 ⸻
 
-🎓 Project Context
+Project Context
 
-This project was created as an interactive digital art / creative coding experiment, inspired by motion based installations found in WNDR Museum.
+This project was created as an interactive digital art, inspired by motion based installations found in WNDR Museum.
 
 The goal is to explore how human movement can become a visual language, transforming everyday movement into digital artwork.
 
 ⸻
 
-📄 License
+License
 
 This project is intended for educational and artistic purposes.
 

@@ -3,7 +3,7 @@
 **ColorMotion Recorder** is an interactive, web-based digital art installation that transforms live movement into a **real-time colored silhouette**.
 
 ## Demo Video
-** [record/demo/demo_video.mp4](record/demo/demo_video.mp4)
+- **[record/demo/demo_video.mp4](record/demo/demo_video.mp4)
 
 ---
 

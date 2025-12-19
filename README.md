@@ -3,13 +3,13 @@
 **ColorMotion Recorder** is an interactive, web-based digital art installation that transforms live movement into a **real-time colored silhouette**.
 
 ## Demo Video
-[record/demo/demo_video.mp4](record/demo/demo_video.mp4)
+[Download to view the full demo](record/demo/demo_video.mp4)
 
-## Live Demo
+## Try It Live!
 
-🔗 https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
+https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
 
->>For best performance, use Chrome on a desktop
+>For best performance, use Chrome on a desktop
 
 ---
 ## 🕹 How to Use
@@ -25,11 +25,11 @@
 
 ## Features
 
-- **Motion-controlled interaction**
-  - **Wave UP ↕ DOWN** → Change color palette (10 variations)
-  - **Wave LEFT ↔ RIGHT** → Start a 5-second recording
+- **Fully motion-controlled interaction**
+  - **Added Wave UP & DOWN** -> Change color palette (10 variations)
+  - **Added Wave LEFT & RIGHT** -> Start a 5 seonds recording
     
-- **motion design**
+- **Motion design**
   - Human movement is rendered as a colorful silhouette instead of real video
   - Filters out small movements such as breathing and lighting noise
   - Prevents accidental triggers from people walking past the camera
@@ -37,9 +37,10 @@
 - **Automatic playback**
   - After recording, the silhouette animation replays automatically
 
-- **Button fallback**
+- **Button fallback for accessibility**
   - A visible **Start Recording** button is always available
-  - Ensures accessibility if gesture detection fails
+  - Ensures accessibility by allowing others to help start the interaction if the user is unable to perform the wave left & right to start
+  - And act as a backup if motion detection fails to start
 
 ---
 
@@ -134,30 +135,55 @@ This project was created as an interactive digital art, inspired by motion based
 
 The goal is to explore how human movement can become a visual language, transforming everyday movement into digital artwork.
 
-⸻
+---
 
-License
+## Documentation References
+
+- **WebRTC – `navigator.mediaDevices.getUserMedia`**  
+  Used to access the user’s webcam for live motion capture.  
+  https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia  
+
+- **HTML5 Canvas 2D API**  
+  Used to draw motion-based silhouettes, pixels, gradients, and color effects.  
+  https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API  
+
+- **MediaRecorder API**  
+  Used to record and replay the generated canvas artwork.  
+  https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder  
+
+- **Canvas Capture Stream – `HTMLCanvasElement.captureStream()`**  
+  Used to capture the canvas as a video stream for recording.  
+  https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/captureStream  
+
+- **Animation Loop – `requestAnimationFrame`**  
+  Used to drive real-time animation and motion analysis.  
+  https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame  
+
+- **JavaScript (ES6)**  
+  Used for logic, state management, and interaction handling.  
+  https://developer.mozilla.org/en-US/docs/Web/JavaScript  
+
+- **ChatGPT (OpenAI)**  
+  Used as a development assistant for documentation guidance, implementation support, and troubleshooting.  
+  https://platform.openai.com/docs  
+  https://openai.com/chatgpt
+---
+
+## Credits
+
+- WebRTC (`getUserMedia`)
+- HTML5 Canvas 2D API
+- MediaRecorder API
+- JavaScript (ES6)
+- ChatGPT (OpenAI)
+---
+
+## License
 
 This project is intended for educational and artistic purposes.
 
 ---
-Credits
 
-This project was built using the following technologies and APIs:
-	•	WebRTC (getUserMedia)
-Used to access the user’s webcam for live motion capture. 
-	•	HTML5 Canvas 2D API
-Used to render real-time, motion-based silhouette visuals and color effects.
-	•	MediaRecorder API
-Used to record the generated canvas artwork and replay the recording.
-	•	JavaScript (ES6)
-Used for code motion analysis, gesture detection, state management, and interaction logic.
-	•	ChatGPT (OpenAI)
-Used as a development assistant to:
-	•	Found free APIs for art effects and recording, and access the user’s webcam for live motion capture
-	•	Understand documentation and implementation details, and connect multiple APIs together (live camera -> motion detection -> canvas rendering -> recording -> replay -> repeat)
-	•	Get guidance on plotting motion pixels and wrapping color gradients around moving object(s)
-	•	Troubleshoot interaction logic and motion detection behavior
 
 
 

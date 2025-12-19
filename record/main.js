@@ -84,8 +84,8 @@ window.addEventListener('DOMContentLoaded', () => {
   let camVideo = null;
 
   // Motion detection canvas (smaller than main canvas)
-  const motionW = 160;
-  const motionH = 120;
+  const motionW = 240;
+  const motionH = 180;
   const motionCanvas = document.createElement('canvas');
   motionCanvas.width = motionW;
   motionCanvas.height = motionH;
@@ -101,10 +101,16 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      camStream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 640, height: 480 },
-        audio: false
-      });
+     camStream = await navigator.mediaDevices.getUserMedia({
+  video: {
+    width: 640,
+    height: 480,
+    frameRate: { ideal: 60 },
+    latency: { ideal: 0 },
+    facingMode: "user"
+  },
+  audio: false
+});
     } catch (err) {
       console.error('getUserMedia failed:', err);
       alert('Could not access camera: ' + err.message);
@@ -314,10 +320,10 @@ function detectHorizontalWave(points) {
     const coloredPoints = computeMotionColor(points);
     if (!coloredPoints.length) return;
 
-    const maxDraw = 4000;
+    const maxDraw = 2200;
     const step = Math.max(1, Math.floor(coloredPoints.length / maxDraw));
 
-    const baseRadius = Math.min(w, h) * 0.015;
+    const baseRadius = Math.min(w, h) * 0.012;
 
     artCtx.globalCompositeOperation = 'lighter';
 

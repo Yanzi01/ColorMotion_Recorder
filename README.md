@@ -70,9 +70,6 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 
 ### 🎬 Demo Videos
 
-> GitHub does not embed videos inline in README files.  
-> Click the links below to view each demo.
-
 - **🎥 Recording*  
   [record/demo/record.mp4](record/demo/record.gif
 

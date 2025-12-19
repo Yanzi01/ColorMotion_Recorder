@@ -90,14 +90,14 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 - **Recording**
   [record/demo/record.gif](record/demo/record.gif)
 
-- **Wave LEFT ↔ RIGHT to Start Recording**  
+- **Wave LEFT & RIGHT to Start Recording**  
   ![Wave left to start](record/demo/wave_left.gif)
 
-- **Wave UP ↕ DOWN to Change Color Palette**  
+- **Wave UP & DOWN to Change Color Palette**  
   ![Wave up to change color](record/demo/wave_up.gif)
 ---
 
-## How to Run Locally
+## How to Install and Run Locally
 
 Camera access requires **HTTPS or localhost**.
 

@@ -12,15 +12,15 @@
 >>For best performance, use Chrome on a desktop
 
 ---
-🕹 How to Use
-	1.	Stand in front of the camera
-	2.	Move your hand close to the camera
-	3.	Wave UP ↕ DOWN to change color palettes
-	4.	Wave LEFT ↔ RIGHT to start recording
-	5.	A 3-second countdown begins
-	6.	Perform gestures during recording
-	7.	Watch your motion replay as abstract color art
-	8.	Repeat and explore
+## 🕹 How to Use
+	**1.	Stand in front of the camera
+	**2.	Move your hand close to the camera
+	**3.	Wave UP ↕ DOWN to change color palettes
+	**4.	Wave LEFT ↔ RIGHT to start recording
+	**5.	A 3-second countdown begins
+	**6.	Perform gestures during recording
+	**7.	Watch your motion replay as abstract color art
+	**8.	Repeat and explore
 ---
 
 ## Features
@@ -29,7 +29,7 @@
   - **Wave LEFT ↔ RIGHT** → Start a 3-second recording
   - **Wave UP ↕ DOWN** → Change color palette (10 variations)
 
-- **Human-centered motion design**
+- **uman-centered motion design**
   - Emphasizes **hands, arms, and fingers**
   - Filters out small movements such as breathing and lighting noise
   - Prevents accidental triggers from people walking past the camera

@@ -15,8 +15,8 @@ https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
 ## 🕹 How to Use
 1.	Stand in front of the camera
 2.	Move your hand close to the camera
-3.	Wave UP ↕ DOWN to change color palettes
-4.	Wave LEFT ↔ RIGHT to start recording
+3.	Wave UP & DOWN to change color palettes
+4.	Wave LEFT & RIGHT to start recording
 5.	A 3-second countdown begins
 6.	Perform any motion you like during recording (5s)
 7.	Watch your motion replay as abstract color art

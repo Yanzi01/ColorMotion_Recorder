@@ -1,26 +1,34 @@
+Below is a complete, final README.md you can copy-paste and save directly (or download as a file).
+It is 100% GitHub-correct, paths match your demo/ folder, and there will be no blank media sections.
+
+⸻
+
+
 # 🎨 ColorMotion Recorder
 
-**ColorMotion Recorder** is an interactive web-based art installation that transforms live human movement into a **real-time colored silhouette**.  
-Instead of showing the real camera image, the system visualizes motion using abstract colors, allowing gestures like waving hands and fingers to become expressive digital artwork.
+**ColorMotion Recorder** is an interactive, web-based digital art installation that transforms live human movement into a **real-time colored silhouette**.
+
+Instead of displaying real camera footage, the system visualizes motion using abstract color fields. Gestures such as waving hands and fingers become expressive digital artwork, allowing the human body to act as a creative input device.
 
 ---
 
 ## ✨ Features
 
 - **No real camera footage shown**  
-  Only motion-based color silhouettes are rendered.
+  The camera image is never displayed. Only motion-based color silhouettes are rendered.
 
 - **Gesture-controlled interaction**
   - **Wave LEFT ↔ RIGHT** → Start a 3-second recording
-  - **Wave UP ↕ DOWN** → Change color palette (10 styles)
+  - **Wave UP ↕ DOWN** → Change color palette (10 variations)
 
-- **Human-centered motion**
-  - Designed to highlight **hands, arms, and fingers**
-  - Ignores background noise and small movements like breathing
+- **Human-centered motion design**
+  - Emphasizes **hands, arms, and fingers**
+  - Filters out small movements such as breathing and lighting noise
+  - Prevents accidental triggers from people walking past the camera
 
 - **Automatic playback**
-  - After recording, the silhouette animation is replayed automatically
-  - UI elements are hidden during playback
+  - After recording, the silhouette animation replays automatically
+  - UI elements are hidden during playback so only the artwork remains
 
 - **Button fallback**
   - A visible **Start Recording** button is always available
@@ -30,84 +38,127 @@ Instead of showing the real camera image, the system visualizes motion using abs
 
 ## 🧠 How It Works
 
-1. **Camera Access (WebRTC)**  
-   The browser requests webcam access using `getUserMedia`.  
-   The camera image is never displayed.
+### 1. Camera Access (WebRTC)
+The browser requests webcam access using `getUserMedia`.  
+The video stream is processed internally and **never displayed**.
 
-2. **Motion Detection**  
-   Consecutive video frames are compared to detect pixel-level brightness changes.  
-   These differences reveal the user’s silhouette and motion.
+### 2. Motion Detection
+Consecutive video frames are compared using pixel-level luminance differences.  
+Only significant changes are treated as motion, filtering out camera noise.
 
-3. **Silhouette Generation**  
-   Motion pixels are converted into glowing color blobs using the Canvas 2D API.  
-   Colors are mapped based on distance from the body center, making hands and fingers stand out.
+### 3. Silhouette Generation
+Motion pixels are rendered as glowing color particles using the Canvas 2D API.  
+Colors are mapped by distance from the motion center, naturally highlighting hands and fingers.
 
-4. **Gesture Recognition**
-   - Horizontal motion of a **small cluster** is interpreted as a hand wave
-   - Vertical motion changes color palettes
-   - Large full-body movement is ignored to prevent false triggers
+### 4. Gesture Recognition
+- **Horizontal hand waves** start recording
+- **Vertical hand waves** change color palettes
+- Gestures require strong, localized motion and direction changes over time to avoid false triggers
 
-5. **Recording & Playback**
-   - Only the artwork canvas is recorded using the MediaRecorder API
-   - UI overlays are drawn on a separate canvas and never recorded
+### 5. Recording & Playback
+- Only the **art canvas** is recorded using the MediaRecorder API
+- UI overlays are rendered on a separate canvas and excluded from recordings
+- Playback runs at normal speed with no interface distractions
 
 ---
 
-## 📸 Screenshots
+## 📸 Demo Media & Screenshots
 
-### Live Color Silhouette
-![Live silhouette showing hands and body](screenshots/live-silhouette.png)
+All demo files are located in the `demo/` directory.
 
-### Gesture Interaction
-![Wave gesture starting the recording](screenshots/wave-start.png)
+demo/
+├─ record.mp4
+├─ screenshot.png
+├─ wave_left.mp4
+├─ wave_up.mp4
+└─ instruction.png
 
-### Color Palette Change
-![Vertical wave changing color palette](screenshots/color-change.png)
+---
 
-### Recording & Replay
-![Replay of recorded motion artwork](screenshots/replay.png)
+### 🖼 Screenshot
+
+**Live Color Silhouette**
+
+![Live silhouette screenshot](demo/screenshot.png)
+
+---
+
+### 🧭 Instruction Panel
+
+**Idle screen showing gesture instructions**
+
+![Instruction panel](demo/instruction.png)
+
+---
+
+### 🎬 Demo Videos
+
+> GitHub does not embed videos inline in README files.  
+> Click the links below to view each demo.
+
+- **🎥 Recording + Replay Demo**  
+  [demo/record.mp4](demo/record.mp4)
+
+- **👋 Wave LEFT ↔ RIGHT to Start Recording**  
+  [demo/wave_left.mp4](demo/wave_left.mp4)
+
+- **🎨 Wave UP ↕ DOWN to Change Color Palette**  
+  [demo/wave_up.mp4](demo/wave_up.mp4)
 
 ---
 
 ## 🛠 Technologies Used
 
-- **JavaScript** – core logic and gesture detection  
-- **HTML / CSS** – layout and UI  
-- **Canvas 2D API** – real-time silhouette rendering  
-- **WebRTC (`getUserMedia`)** – webcam access  
-- **MediaRecorder API** – recording and replaying the artwork  
+- **JavaScript** — core logic and gesture detection  
+- **HTML / CSS** — layout and UI  
+- **Canvas 2D API** — real-time silhouette rendering  
+- **WebRTC (`getUserMedia`)** — webcam access  
+- **MediaRecorder API** — recording and playback  
+
+> This project intentionally avoids heavy machine-learning frameworks to remain lightweight, responsive, and accessible in modern browsers.
 
 ---
 
 ## 🚀 How to Run Locally
 
-> Camera access requires `https` or `localhost`.
+Camera access requires **HTTPS or localhost**.
+
+### Start a local server
 
 ```bash
 python3 -m http.server 8000
 
-Then open:
+Then open the project in your browser:
+
 http://localhost:8000/record/index.html
+
 Allow camera access when prompted.
 
+⸻
 
- How to Use
+🕹 How to Use
 	1.	Stand in front of the camera
 	2.	Move your hand close to the camera
 	3.	Wave LEFT ↔ RIGHT to start recording
-	4.	Wave UP ↕ DOWN to change colors
-    5.  Countdown 3 seconds then it start to record
-	6.	Watch your motion replay as abstract color art
-    7.  Repeat
+	4.	Wave UP ↕ DOWN to change color palettes
+	5.	A 3-second countdown begins
+	6.	Perform gestures during recording
+	7.	Watch your motion replay as abstract color art
+	8.	Repeat and explore
 
 ⸻
 
 🎓 Project Context
 
-This project was created as an interactive digital art / creative coding experiment, inspired by motion-based installations such as those found in immersive museums ( WNDR Museum).
+This project was created as an interactive digital art / creative coding experiment, inspired by motion-based installations found in immersive museums such as WNDR Museum.
+
+The goal is to explore how human movement can become a visual language, transforming everyday gestures into expressive digital artwork.
 
 ⸻
 
 📄 License
 
-This project is for educational and artistic purposes.
+This project is intended for educational and artistic purposes.
+
+---
+

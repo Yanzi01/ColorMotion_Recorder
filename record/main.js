@@ -168,8 +168,10 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // LEFT/RIGHT wave to start recording
-function detectHorizontalWave(points) {
-  if (!points.length) return false;
+function detectHorizontalWave(points, strength) {
+  // Hard gate: ignore tiny/no movement
+  if (strength < 0.12) return false;      // raise if still too sensitive (0.15)
+  if (points.length < 220) return false;  // require enough motion pixels
 
   // Compute centroid X
   let sumX = 0;
@@ -179,22 +181,21 @@ function detectHorizontalWave(points) {
   const now = performance.now();
   state.horizontalHistory.push({ time: now, x: cx });
 
-  // keep last ~800ms of motion
+  // keep last ~800ms
   const cutoff = now - 800;
   state.horizontalHistory = state.horizontalHistory.filter(e => e.time > cutoff);
 
-  if (state.horizontalHistory.length < 8) return false;
+  if (state.horizontalHistory.length < 10) return false;
 
-  // Range of motion (how far it traveled horizontally)
-  let minX = Infinity;
-  let maxX = -Infinity;
+  // Range
+  let minX = Infinity, maxX = -Infinity;
   for (const e of state.horizontalHistory) {
     if (e.x < minX) minX = e.x;
     if (e.x > maxX) maxX = e.x;
   }
   const range = maxX - minX;
 
-  //  Count direction changes (must actually wave, not just move one way)
+  // Direction changes (ignore tiny jitter)
   let lastX = state.horizontalHistory[0].x;
   let lastSign = 0;
   let dirChanges = 0;
@@ -202,110 +203,55 @@ function detectHorizontalWave(points) {
   for (let i = 1; i < state.horizontalHistory.length; i++) {
     const x = state.horizontalHistory[i].x;
     const dx = x - lastX;
-    const sign = dx > 0 ? 1 : dx < 0 ? -1 : 0;
 
-    if (sign !== 0) {
-      if (lastSign !== 0 && sign !== lastSign) {
-        dirChanges++;
-      }
-      lastSign = sign;
+    if (Math.abs(dx) < 0.03) { // ignore <3% width jitter
+      lastX = x;
+      continue;
     }
 
+    const sign = dx > 0 ? 1 : -1;
+    if (lastSign !== 0 && sign !== lastSign) dirChanges++;
+    lastSign = sign;
     lastX = x;
   }
 
- 
-  const minRange = 0.50;      // need to move at least 50% of screen width
-  const minDirChanges = 4;    // left right left right
+  const minRange = 0.55;     // big wave
+  const minDirChanges = 2;   // left→right→left
+  const cooldownMs = 1800;
 
-  if (
-    range > minRange &&
-    dirChanges >= minDirChanges &&
-    (now - state.lastWaveStart > 1000) // cooldown 1s
-  ) {
+  if (range > minRange && dirChanges >= minDirChanges && (now - state.lastWaveStart > cooldownMs)) {
     state.lastWaveStart = now;
-    console.log('Horizontal wave detected (BIG wave)');
+    console.log('Horizontal wave detected (gated)');
     return true;
   }
-
   return false;
 }
 
   // UP/DOWN wave to change colors
-  function detectVerticalWave(points) {
-    if (!points.length) return false;
+  function detectVerticalWave(points, strength) {
+  if (strength < 0.10) return false;
+  if (points.length < 180) return false;
 
-    let sumY = 0;
-    for (const p of points) sumY += p.y;
-    const cy = sumY / points.length;
+  let sumY = 0;
+  for (const p of points) sumY += p.y;
+  const cy = sumY / points.length;
 
-    const now = performance.now();
-    state.verticalHistory.push({ time: now, y: cy });
+  const now = performance.now();
+  state.verticalHistory.push({ time: now, y: cy });
 
-    const cutoff = now - 700;
-    state.verticalHistory = state.verticalHistory.filter(e => e.time > cutoff);
+  const cutoff = now - 700;
+  state.verticalHistory = state.verticalHistory.filter(e => e.time > cutoff);
 
-    if (state.verticalHistory.length < 6) return false;
+  if (state.verticalHistory.length < 8) return false;
 
-    let minY = Infinity;
-    let maxY = -Infinity;
-    for (const e of state.verticalHistory) {
-      if (e.y < minY) minY = e.y;
-      if (e.y > maxY) maxY = e.y;
-    }
-
-    const range = maxY - minY;
-
-    // require clear up/down motion
-    if (range > 0.20) {
-      console.log('Vertical wave detected (palette change)');
-      return true;
-    }
-    return false;
+  let minY = Infinity, maxY = -Infinity;
+  for (const e of state.verticalHistory) {
+    if (e.y < minY) minY = e.y;
+    if (e.y > maxY) maxY = e.y;
   }
 
-  // Silhouette rendering 
-  // color motion points by distance from motion center using current palette
-  function computeMotionColor(points) {
-    if (points.length === 0) return [];
-
-    let cx = 0;
-    let cy = 0;
-    for (const p of points) {
-      cx += p.x;
-      cy += p.y;
-    }
-    cx /= points.length;
-    cy /= points.length;
-
-    const palette = colorPalettes[state.paletteIndex];
-    let startHue = palette.startHue;
-    let endHue = palette.endHue;
-
-    // allow wrap around 360°
-    let range = endHue - startHue;
-    if (range > 180) range -= 360;
-    if (range < -180) range += 360;
-
-    const colored = [];
-    for (const p of points) {
-      const dx = p.x - cx;
-      const dy = p.y - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy); 
-
-      const t = Math.min(1, dist * 4); 
-
-      const hue = (startHue + (1 - t) * range + 360) % 360;
-
-      colored.push({
-        x: p.x,
-        y: p.y,
-        distNorm: t,
-        hue
-      });
-    }
-    return colored;
-  }
+  return (maxY - minY) > 0.22;
+}
 
   function drawSilhouette(points) {
     const w = artCanvas.width;
@@ -320,7 +266,7 @@ function detectHorizontalWave(points) {
     const coloredPoints = computeMotionColor(points);
     if (!coloredPoints.length) return;
 
-    const maxDraw = 2200;
+    const maxDraw = 1000;
     const step = Math.max(1, Math.floor(coloredPoints.length / maxDraw));
 
     const baseRadius = Math.min(w, h) * 0.012;
@@ -590,9 +536,9 @@ function detectHorizontalWave(points) {
       drawSilhouette(points);
 
       // gesture: vertical wave  change palette (allowed in idle, countdown, recording)
-      if (detectVerticalWave(points)) {
-        pickRandomPalette();
-      }
+      if (detectVerticalWave(points, strength)) {
+  pickRandomPalette();
+}
 
       if (state.mode === 'idle') {
         // idle hints
@@ -600,7 +546,7 @@ function detectHorizontalWave(points) {
         drawIdleHintsWithFade(state.hintTime);
 
         // gesture: horizontal wave start countdown
-        if (detectHorizontalWave(points)) {
+        if (detectHorizontalWave(points, strength)) {
           state.mode = 'countdown';
           state.countdown = 3.0;
           state.hintTime = 0;

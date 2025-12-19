@@ -1,15 +1,13 @@
 # 🎨 ColorMotion Recorder
 
-**ColorMotion Recorder** is an interactive, web-based digital art installation that transforms live human movement into a **real-time colored silhouette**.
+**ColorMotion Recorder** is an interactive, web-based digital art installation that transforms live movement into a **real-time colored silhouette**.
 
-Instead of displaying real camera footage, the system visualizes motion using abstract color fields. Gestures such as waving hands and fingers become expressive digital artwork, allowing the human body to act as a creative input device.
+## Demo Video
+** [record/demo/demo_video.mp4](record/demo/demo_video.mp4)
 
 ---
 
 ## ✨ Features
-
-- **No real camera footage shown**  
-  The camera image is never displayed. Only motion-based color silhouettes are rendered.
 
 - **Gesture-controlled interaction**
   - **Wave LEFT ↔ RIGHT** → Start a 3-second recording
@@ -22,7 +20,6 @@ Instead of displaying real camera footage, the system visualizes motion using ab
 
 - **Automatic playback**
   - After recording, the silhouette animation replays automatically
-  - UI elements are hidden during playback so only the artwork remains
 
 - **Button fallback**
   - A visible **Start Recording** button is always available
@@ -47,25 +44,11 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 ### 4. Gesture Recognition
 - **Horizontal hand waves** start recording
 - **Vertical hand waves** change color palettes
-- Gestures require strong, localized motion and direction changes over time to avoid false triggers
 
 ### 5. Recording & Playback
 - Only the **art canvas** is recorded using the MediaRecorder API
 - UI overlays are rendered on a separate canvas and excluded from recordings
-- Playback runs at normal speed with no interface distractions
-
----
-
-## 📸 Demo Media & Screenshots
-
-All demo files are located in the `demo/` directory.
-
-demo/
-├─ record.mp4
-├─ screenshot.png
-├─ wave_left.mp4
-├─ wave_up.mp4
-└─ instruction.png
+- Playback runs at normal speed
 
 ---
 
@@ -90,14 +73,14 @@ demo/
 > GitHub does not embed videos inline in README files.  
 > Click the links below to view each demo.
 
-- **🎥 Recording + Replay Demo**  
-  [record/demo/record.mp4](record/demo/record.mp4)
+- **🎥 Recording*  
+  [record/demo/record.mp4](record/demo/record.gif
 
 - **👋 Wave LEFT ↔ RIGHT to Start Recording**  
-  [record/demo/wave_left.mp4](record/demo/wave_left.mp4)
+  ![Wave left to start](record/demo/wave_left.gif)
 
 - **🎨 Wave UP ↕ DOWN to Change Color Palette**  
-  [record/demo/wave_up.mp4](record/demo/wave_up.mp4)
+  ![Wave up to change color](record/demo/wave_up.gif)
 
 ---
 
@@ -108,9 +91,6 @@ demo/
 - **Canvas 2D API** — real-time silhouette rendering  
 - **WebRTC (`getUserMedia`)** — webcam access  
 - **MediaRecorder API** — recording and playback  
-
-> This project intentionally avoids heavy machine-learning frameworks to remain lightweight, responsive, and accessible in modern browsers.
-
 ---
 
 ## 🚀 How to Run Locally
@@ -144,9 +124,9 @@ Allow camera access when prompted.
 
 🎓 Project Context
 
-This project was created as an interactive digital art / creative coding experiment, inspired by motion-based installations found in immersive museums such as WNDR Museum.
+This project was created as an interactive digital art / creative coding experiment, inspired by motion based installations found in WNDR Museum.
 
-The goal is to explore how human movement can become a visual language, transforming everyday gestures into expressive digital artwork.
+The goal is to explore how human movement can become a visual language, transforming everyday movement into digital artwork.
 
 ⸻
 

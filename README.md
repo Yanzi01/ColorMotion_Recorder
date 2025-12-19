@@ -106,7 +106,7 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 - **MediaRecorder API** — recording and playback  
 ---
 
-## 🚀 How to Run Locally
+## How to Run Locally
 
 Camera access requires **HTTPS or localhost**.
 

@@ -1,6 +1,6 @@
 // - Wave LEFT/RIGHT to start recording
 // - Wave UP/DOWN to change color palette 
-// - 3s recording with countdown, timer, and replay of the recording
+// - 5s recording with countdown, timer, and replay of the recording
 
 window.addEventListener('DOMContentLoaded', () => {
   const artCanvas = document.getElementById('artCanvas');
@@ -623,7 +623,7 @@ window.addEventListener('DOMContentLoaded', () => {
         drawCountdownOverlay();
         if (state.countdown <= 0) {
           state.mode = 'recording';
-          state.recordRemaining = 3.0;
+          state.recordRemaining = 5.0;
           startCanvasRecording();
         }
       }

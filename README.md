@@ -26,10 +26,11 @@
 ## Features
 
 - **Motion-controlled interaction**
-  - **Wave LEFT ↔ RIGHT** → Start a 5-second recording
   - **Wave UP ↕ DOWN** → Change color palette (10 variations)
-
-- ** motion design**
+  - **Wave LEFT ↔ RIGHT** → Start a 5-second recording
+    
+- **motion design**
+  - Human movement is rendered as a colorful silhouette instead of real video
   - Filters out small movements such as breathing and lighting noise
   - Prevents accidental triggers from people walking past the camera
 

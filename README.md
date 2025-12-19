@@ -9,7 +9,7 @@
 
 🔗 https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
 
->>For best performance, use Chrome
+>>For best performance, use Chrome on a desktop
 
 ---
 🕹 How to Use

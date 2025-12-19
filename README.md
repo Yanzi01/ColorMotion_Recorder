@@ -71,7 +71,7 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 ### Demo Videos
 
 - **🎥 Recording*  
-  [record/demo/record.mp4](record/demo/record.gif
+  [record/demo/record.mp4](record/demo/record.gif)
 
 - **👋 Wave LEFT ↔ RIGHT to Start Recording**  
   ![Wave left to start](record/demo/wave_left.gif)

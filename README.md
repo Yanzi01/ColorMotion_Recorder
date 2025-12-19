@@ -1,9 +1,3 @@
-Below is a complete, final README.md you can copy-paste and save directly (or download as a file).
-It is 100% GitHub-correct, paths match your demo/ folder, and there will be no blank media sections.
-
-⸻
-
-
 # 🎨 ColorMotion Recorder
 
 **ColorMotion Recorder** is an interactive, web-based digital art installation that transforms live human movement into a **real-time colored silhouette**.

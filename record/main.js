@@ -170,8 +170,8 @@ window.addEventListener('DOMContentLoaded', () => {
   // LEFT/RIGHT wave to start recording 
   function detectHorizontalWave(points, strength) {
     // Hard gate: ignore tiny/no movement
-    if (strength < 0.12) return false;      // raise if still too sensitive so user can control better
-    if (points.length < 220) return false;  // require enough motion pixels
+    if (strength < 0.01) return false;      // raise if still too sensitive so user can control better
+    if (points.length < 40) return false;  // require enough motion pixels
 
     // Compute centroid X
     let sumX = 0;
@@ -215,9 +215,9 @@ window.addEventListener('DOMContentLoaded', () => {
       lastX = x;
     }
 
-    const minRange = 0.6;     // big wave
-    const minDirChanges = 4;   // left right left right
-    const cooldownMs = 1800;
+    const minRange = 0.2;     // big wave
+    const minDirChanges = 3;   // left right left right
+    const cooldownMs = 1000;
 
     if (range > minRange && dirChanges >= minDirChanges && (now - state.lastWaveStart > cooldownMs)) {
       state.lastWaveStart = now;
@@ -229,8 +229,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // UP/DOWN wave to change colors
   function detectVerticalWave(points, strength) {
-    if (strength < 0.10) return false;
-    if (points.length < 180) return false;
+    if (strength < 0.02) return false;
+    if (points.length < 60) return false;
 
     let sumY = 0;
     for (const p of points) sumY += p.y;
@@ -638,7 +638,6 @@ window.addEventListener('DOMContentLoaded', () => {
     try {
       await setupCamera();
       console.log('Camera ready on load.');
-      startBtn.style.display = 'none';
     } catch (err) {
       console.error('Auto camera setup failed:', err);
       // show button as fallback so user can click to retry

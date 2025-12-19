@@ -79,7 +79,7 @@ demo/
 
 **Live Color Silhouette**
 
-![Live silhouette screenshot](demo/screenshot.png)
+![Live silhouette screenshot](record/demo/screenshot.png)
 
 ---
 
@@ -87,7 +87,7 @@ demo/
 
 **Idle screen showing gesture instructions**
 
-![Instruction panel](demo/instruction.png)
+![Instruction panel](record/demo/instruction.png)
 
 ---
 
@@ -97,13 +97,13 @@ demo/
 > Click the links below to view each demo.
 
 - **🎥 Recording + Replay Demo**  
-  [demo/record.mp4](demo/record.mp4)
+  [record/demo/record.mp4](record/demo/record.mp4)
 
 - **👋 Wave LEFT ↔ RIGHT to Start Recording**  
-  [demo/wave_left.mp4](demo/wave_left.mp4)
+  [record/demo/wave_left.mp4](record/demo/wave_left.mp4)
 
 - **🎨 Wave UP ↕ DOWN to Change Color Palette**  
-  [demo/wave_up.mp4](demo/wave_up.mp4)
+  [record/demo/wave_up.mp4](record/demo/wave_up.mp4)
 
 ---
 

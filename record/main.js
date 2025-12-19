@@ -1,6 +1,8 @@
-// ColorMotion Recorder - Silhouette Edition
-// Webcam → NO real image, only a colored human silhouette.
-// 3s recording with countdown, timer, and replay of the color-only video.
+// ColorMotion Recorder - Gesture + Palette Edition
+// - Webcam → colored human silhouette (no real image)
+// - Wave LEFT/RIGHT to start recording
+// - Wave UP/DOWN to change color palette (10 options)
+// - 3s recording with countdown, timer, and replay
 
 window.addEventListener('DOMContentLoaded', () => {
   const artCanvas = document.getElementById('artCanvas');
@@ -33,11 +35,51 @@ window.addEventListener('DOMContentLoaded', () => {
   const state = {
     mode: 'idle',          // 'idle' | 'countdown' | 'recording' | 'transition' | 'playback'
     countdown: 0,
-    transition: 0,         // 1 → 0 during REPLAY fade
-    recordRemaining: 0     // seconds left in current recording
+    transition: 0,         // 1 → 0 during "REPLAY" fade
+    recordRemaining: 0,    // seconds left in current recording
+
+    // gesture & hints
+    horizontalHistory: [],
+    verticalHistory: [],
+    lastWaveStart: 0,
+    hintTime: 0,
+
+    // color palettes
+    paletteIndex: 0,
+    lastPaletteChange: 0
   };
 
   let lastTime = 0;
+
+  // ----------------- Color Palettes -----------------
+  // 10 palette ranges (hue in degrees)
+  const colorPalettes = [
+    { startHue:   0, endHue:  60 },  // red → yellow
+    { startHue:  40, endHue: 140 },  // orange → green
+    { startHue: 120, endHue: 220 },  // green → blue
+    { startHue: 200, endHue: 300 },  // blue → magenta
+    { startHue: 260, endHue: 360 },  // purple → red
+    { startHue: 300, endHue:  60 },  // magenta → yellow (wrap)
+    { startHue: 180, endHue: 300 },  // cyan → magenta
+    { startHue:  20, endHue: 200 },  // warm → cool
+    { startHue:  80, endHue: 260 },  // lime → purple
+    { startHue: 330, endHue:  90 }   // pink → orange
+  ];
+
+  function pickRandomPalette() {
+    const now = performance.now();
+    // small cooldown to avoid changing too fast
+    if (now - state.lastPaletteChange < 400) return;
+
+    const old = state.paletteIndex;
+    let idx = old;
+    while (idx === old) {
+      idx = Math.floor(Math.random() * colorPalettes.length);
+    }
+    state.paletteIndex = idx;
+    state.lastPaletteChange = now;
+    console.log('Palette changed to', idx);
+  }
 
   // ----------------- Webcam + motion -----------------
   let camStream = null;
@@ -105,7 +147,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const d = Math.abs(lum - prevLuma[p]);
       diffSum += d;
 
-      // Motion threshold – these pixels are where things changed
+      // Motion threshold
       if (d > 18) {
         const x = (p % motionW) / motionW;
         const y = Math.floor(p / motionW) / motionH;
@@ -121,11 +163,110 @@ window.addEventListener('DOMContentLoaded', () => {
     return { strength, points };
   }
 
-  // Color-annotate motion points based on distance from center-of-mass
+  // ----------------- Gesture detection -----------------
+  // LEFT/RIGHT wave to start recording
+  // LEFT/RIGHT wave to start recording (needs big, back-and-forth motion)
+function detectHorizontalWave(points) {
+  if (!points.length) return false;
+
+  // 1) Compute centroid X
+  let sumX = 0;
+  for (const p of points) sumX += p.x;
+  const cx = sumX / points.length;
+
+  const now = performance.now();
+  state.horizontalHistory.push({ time: now, x: cx });
+
+  // keep last ~800ms of motion
+  const cutoff = now - 800;
+  state.horizontalHistory = state.horizontalHistory.filter(e => e.time > cutoff);
+
+  if (state.horizontalHistory.length < 8) return false;
+
+  // 2) Range of motion (how far it traveled horizontally)
+  let minX = Infinity;
+  let maxX = -Infinity;
+  for (const e of state.horizontalHistory) {
+    if (e.x < minX) minX = e.x;
+    if (e.x > maxX) maxX = e.x;
+  }
+  const range = maxX - minX;
+
+  // 3) Count direction changes (must actually wave, not just move one way)
+  let lastX = state.horizontalHistory[0].x;
+  let lastSign = 0;
+  let dirChanges = 0;
+
+  for (let i = 1; i < state.horizontalHistory.length; i++) {
+    const x = state.horizontalHistory[i].x;
+    const dx = x - lastX;
+    const sign = dx > 0 ? 1 : dx < 0 ? -1 : 0;
+
+    if (sign !== 0) {
+      if (lastSign !== 0 && sign !== lastSign) {
+        dirChanges++;
+      }
+      lastSign = sign;
+    }
+
+    lastX = x;
+  }
+
+  // Tune these if needed:
+  const minRange = 0.50;      // need to move at least 30% of screen width
+  const minDirChanges = 4;    // e.g. left→right→left
+
+  if (
+    range > minRange &&
+    dirChanges >= minDirChanges &&
+    (now - state.lastWaveStart > 1000) // cooldown 1s
+  ) {
+    state.lastWaveStart = now;
+    console.log('Horizontal wave detected (BIG wave)');
+    return true;
+  }
+
+  return false;
+}
+
+  // UP/DOWN wave to change colors
+  function detectVerticalWave(points) {
+    if (!points.length) return false;
+
+    let sumY = 0;
+    for (const p of points) sumY += p.y;
+    const cy = sumY / points.length;
+
+    const now = performance.now();
+    state.verticalHistory.push({ time: now, y: cy });
+
+    const cutoff = now - 700;
+    state.verticalHistory = state.verticalHistory.filter(e => e.time > cutoff);
+
+    if (state.verticalHistory.length < 6) return false;
+
+    let minY = Infinity;
+    let maxY = -Infinity;
+    for (const e of state.verticalHistory) {
+      if (e.y < minY) minY = e.y;
+      if (e.y > maxY) maxY = e.y;
+    }
+
+    const range = maxY - minY;
+
+    // require clear up/down motion; tweak 0.20 if needed
+    if (range > 0.20) {
+      console.log('Vertical wave detected (palette change)');
+      return true;
+    }
+    return false;
+  }
+
+  // ----------------- Silhouette rendering -----------------
+  // color motion points by distance from motion center using current palette
   function computeMotionColor(points) {
     if (points.length === 0) return [];
 
-    // Center of motion (roughly body center)
     let cx = 0;
     let cy = 0;
     for (const p of points) {
@@ -135,18 +276,24 @@ window.addEventListener('DOMContentLoaded', () => {
     cx /= points.length;
     cy /= points.length;
 
+    const palette = colorPalettes[state.paletteIndex];
+    let startHue = palette.startHue;
+    let endHue = palette.endHue;
+
+    // allow wrap around 360°
+    let range = endHue - startHue;
+    if (range > 180) range -= 360;
+    if (range < -180) range += 360;
+
     const colored = [];
     for (const p of points) {
       const dx = p.x - cx;
       const dy = p.y - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy); // 0..~0.7
+      const dist = Math.sqrt(dx * dx + dy * dy); // 0..something
 
-      // Normalize distance to 0..1
-      const t = Math.min(1, dist * 4); // torso small, hand further
+      const t = Math.min(1, dist * 4); // normalize 0..1
 
-      // Map distance to hue: center warm, edges cool
-      // t=0 → hue≈300 (magenta), t=1 → hue≈0 (red) OR reverse; we choose:
-      const hue = (1 - t) * 260; // 260=blue/purple, 0=red
+      const hue = (startHue + (1 - t) * range + 360) % 360;
 
       colored.push({
         x: p.x,
@@ -158,12 +305,11 @@ window.addEventListener('DOMContentLoaded', () => {
     return colored;
   }
 
-  // ----------------- Silhouette rendering -----------------
   function drawSilhouette(points) {
     const w = artCanvas.width;
     const h = artCanvas.height;
 
-    // Clear completely → crisp camera-like movement (no trails)
+    // clear → crisp camera-like motion (no trailing)
     artCtx.fillStyle = 'black';
     artCtx.fillRect(0, 0, w, h);
 
@@ -172,11 +318,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const coloredPoints = computeMotionColor(points);
     if (!coloredPoints.length) return;
 
-    // Downsample points so it doesn’t get too heavy
     const maxDraw = 4000;
     const step = Math.max(1, Math.floor(coloredPoints.length / maxDraw));
 
-    const baseRadius = Math.min(w, h) * 0.015; // base blob size
+    const baseRadius = Math.min(w, h) * 0.015;
 
     artCtx.globalCompositeOperation = 'lighter';
 
@@ -186,9 +331,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const sx = cp.x * w;
       const sy = cp.y * h;
 
-      // Fingers (far from center) slightly larger and brighter
       const radius = baseRadius * (0.6 + 1.2 * cp.distNorm);
-
       const centerColor = `hsla(${cp.hue}, 100%, 60%, 0.9)`;
 
       const grad = artCtx.createRadialGradient(
@@ -207,9 +350,31 @@ window.addEventListener('DOMContentLoaded', () => {
     artCtx.globalCompositeOperation = 'source-over';
   }
 
-  // ----------------- UI Overlays (only on uiCanvas) -----------------
+  // ----------------- UI Overlays (uiCanvas only) -----------------
   function clearUI() {
     uiCtx.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
+  }
+
+  // Idle hints: how to interact
+  function drawIdleHintsWithFade(t) {
+    const w = uiCanvas.width;
+    const h = uiCanvas.height;
+
+    let alpha = Math.min(1, t * 0.6); // fade in ~1.5s
+
+    uiCtx.save();
+    uiCtx.globalAlpha = alpha;
+    uiCtx.fillStyle = '#ffffff';
+    uiCtx.textAlign = 'center';
+    uiCtx.textBaseline = 'middle';
+
+    uiCtx.font = `${Math.floor(w * 0.025)}px system-ui`;
+    uiCtx.fillText("Wave LEFT ↔ RIGHT to Start Recording", w / 2, h * 0.85);
+
+    uiCtx.font = `${Math.floor(w * 0.022)}px system-ui`;
+    uiCtx.fillText("Wave UP ↕ DOWN to Change Colors", w / 2, h * 0.90);
+
+    uiCtx.restore();
   }
 
   // Countdown: "Record in" + big fading 3/2/1 in center
@@ -221,18 +386,16 @@ window.addEventListener('DOMContentLoaded', () => {
     uiCtx.fillRect(0, 0, w, h);
 
     const sec = Math.max(0, state.countdown);
-    const num = Math.max(1, Math.ceil(sec));      // 3,2,1
-    const phase = sec - Math.floor(sec);          // 0..1 within each second
-    const alpha = 1 - phase;                      // fade OUT each second
+    const num = Math.max(1, Math.ceil(sec));
+    const phase = sec - Math.floor(sec); // 0..1
+    const alpha = 1 - phase;             // fade out
 
-    // "Record in" label
     uiCtx.fillStyle = '#ffffff';
     uiCtx.textAlign = 'center';
     uiCtx.textBaseline = 'middle';
     uiCtx.font = `${Math.floor(w * 0.04)}px system-ui`;
     uiCtx.fillText('Record in', w / 2, h / 2 - w * 0.09);
 
-    // Big number that fades out
     uiCtx.save();
     uiCtx.globalAlpha = alpha;
     uiCtx.font = `bold ${Math.floor(w * 0.25)}px system-ui`;
@@ -240,7 +403,7 @@ window.addEventListener('DOMContentLoaded', () => {
     uiCtx.restore();
   }
 
-  // Recording timer overlay: top-right, gradient like Start button
+  // Recording timer overlay: top-right, gradient pill
   function drawRecordingOverlay() {
     const w = uiCanvas.width;
     const h = uiCanvas.height;
@@ -364,6 +527,11 @@ window.addEventListener('DOMContentLoaded', () => {
         startBtn.disabled = false;
         startBtn.textContent = 'Start recording';
         startBtn.style.display = '';
+
+        // reset hint + histories so user can wave again
+        state.hintTime = 0;
+        state.horizontalHistory = [];
+        state.verticalHistory = [];
       };
 
       state.mode = 'transition';
@@ -379,7 +547,8 @@ window.addEventListener('DOMContentLoaded', () => {
     artCtx.drawImage(playbackVideo, 0, 0, artCanvas.width, artCanvas.height);
   }
 
-  // ----------------- Button -----------------
+  // ----------------- Button (optional backup) -----------------
+  // Clicking still works as an alternative to waving
   startBtn.addEventListener('click', async () => {
     if (state.mode !== 'idle') return;
     console.log('Start button clicked.');
@@ -399,6 +568,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     state.mode = 'countdown';
     state.countdown = 3.0;
+    state.hintTime = 0;
   });
 
   // ----------------- Main loop -----------------
@@ -406,16 +576,37 @@ window.addEventListener('DOMContentLoaded', () => {
     const dt = (timestamp - lastTime) * 0.001 || 0;
     lastTime = timestamp;
 
-    // always clear UI first
     clearUI();
 
     if (state.mode === 'playback') {
       // only the recorded silhouette video
       drawPlaybackFrame();
     } else {
-      // live silhouette
       const { strength, points } = computeMotionField();
+
+      // always show live silhouette when not in playback
       drawSilhouette(points);
+
+      // gesture: vertical wave → change palette (allowed in idle, countdown, recording)
+      if (detectVerticalWave(points)) {
+        pickRandomPalette();
+      }
+
+      if (state.mode === 'idle') {
+        // idle hints
+        state.hintTime += dt;
+        drawIdleHintsWithFade(state.hintTime);
+
+        // gesture: horizontal wave → start countdown
+        if (detectHorizontalWave(points)) {
+          state.mode = 'countdown';
+          state.countdown = 3.0;
+          state.hintTime = 0;
+          startBtn.disabled = true;
+          startBtn.textContent = 'Recording...';
+          startBtn.style.display = 'none';
+        }
+      }
 
       if (state.mode === 'recording') {
         state.recordRemaining -= dt;
@@ -455,4 +646,18 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   requestAnimationFrame(loop);
+    // Try to start camera immediately on load (no click needed)
+  (async () => {
+    try {
+      await setupCamera();
+      console.log('Camera ready on load.');
+      // hide start button if you don't want it
+      startBtn.style.display = 'none';
+    } catch (err) {
+      console.error('Auto camera setup failed:', err);
+      // show button as fallback so user can click to retry
+      startBtn.style.display = '';
+      startBtn.textContent = 'Enable camera';
+    }
+  })();
 });

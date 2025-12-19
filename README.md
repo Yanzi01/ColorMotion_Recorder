@@ -25,12 +25,11 @@
 
 ## Features
 
-- **Gesture-controlled interaction**
-  - **Wave LEFT ↔ RIGHT** → Start a 3-second recording
+- **Motion-controlled interaction**
+  - **Wave LEFT ↔ RIGHT** → Start a 5-second recording
   - **Wave UP ↕ DOWN** → Change color palette (10 variations)
 
-- **uman-centered motion design**
-  - Emphasizes **hands, arms, and fingers**
+- ** motion design**
   - Filters out small movements such as breathing and lighting noise
   - Prevents accidental triggers from people walking past the camera
 
@@ -86,24 +85,14 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 
 ### Demo Videos
 
-- **🎥 Recording*  
+- **Recording**
   [record/demo/record.gif](record/demo/record.gif)
 
-- **👋 Wave LEFT ↔ RIGHT to Start Recording**  
+- **Wave LEFT ↔ RIGHT to Start Recording**  
   ![Wave left to start](record/demo/wave_left.gif)
 
-- **🎨 Wave UP ↕ DOWN to Change Color Palette**  
+- **Wave UP ↕ DOWN to Change Color Palette**  
   ![Wave up to change color](record/demo/wave_up.gif)
-
----
-
-## 🛠 Technologies Used
-
-- **JavaScript** — core logic and gesture detection  
-- **HTML / CSS** — layout and UI  
-- **Canvas 2D API** — real-time silhouette rendering  
-- **WebRTC (`getUserMedia`)** — webcam access  
-- **MediaRecorder API** — recording and playback  
 ---
 
 ## How to Run Locally
@@ -151,4 +140,24 @@ License
 This project is intended for educational and artistic purposes.
 
 ---
+Credits
+
+This project was built using the following technologies and APIs:
+	•	WebRTC (getUserMedia)
+Used to access the user’s webcam for live motion capture. 
+	•	HTML5 Canvas 2D API
+Used to render real-time, motion-based silhouette visuals and color effects.
+	•	MediaRecorder API
+Used to record the generated canvas artwork and replay the recording.
+	•	JavaScript (ES6)
+Used for code motion analysis, gesture detection, state management, and interaction logic.
+	•	ChatGPT (OpenAI)
+Used as a development assistant to:
+	•	Found free APIs for art effects and recording, and access the user’s webcam for live motion capture
+	•	Understand documentation and implementation details, and connect multiple APIs together (live camera -> motion detection -> canvas rendering -> recording -> replay -> repeat)
+	•	Get guidance on plotting motion pixels and wrapping color gradients around moving object(s)
+	•	Troubleshoot interaction logic and motion detection behavior
+
+
+
 

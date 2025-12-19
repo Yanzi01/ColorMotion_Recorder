@@ -27,7 +27,7 @@
 
 ---
 
-## 🧠 How It Works
+## How It Works
 
 ### 1. Camera Access (WebRTC)
 The browser requests webcam access using `getUserMedia`.  

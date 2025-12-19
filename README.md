@@ -5,6 +5,20 @@
 ## Demo Video
 [record/demo/demo_video.mp4](record/demo/demo_video.mp4)
 
+## Live Demo
+
+🔗 https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
+
+---
+🕹 How to Use
+	1.	Stand in front of the camera
+	2.	Move your hand close to the camera
+	3.	Wave UP ↕ DOWN to change color palettes
+	4.	Wave LEFT ↔ RIGHT to start recording
+	5.	A 3-second countdown begins
+	6.	Perform gestures during recording
+	7.	Watch your motion replay as abstract color art
+	8.	Repeat and explore
 ---
 
 ## Features
@@ -94,6 +108,13 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 
 Camera access requires **HTTPS or localhost**.
 
+### Clone the repository
+
+```bash
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
+```
+
 ### Start a local server
 
 ```bash
@@ -108,17 +129,10 @@ http://localhost:8000/record/index.html
 
 Allow camera access when prompted.
 
-⸻
-
-🕹 How to Use
-	1.	Stand in front of the camera
-	2.	Move your hand close to the camera
-	3.	Wave LEFT ↔ RIGHT to start recording
-	4.	Wave UP ↕ DOWN to change color palettes
-	5.	A 3-second countdown begins
-	6.	Perform gestures during recording
-	7.	Watch your motion replay as abstract color art
-	8.	Repeat and explore
+Notes
+	•	Movement interaction requires a webcam
+	•	The project will not work if opened directly as a local file
+	•	Use Chrome for best results
 
 ⸻
 

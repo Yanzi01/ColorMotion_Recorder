@@ -18,7 +18,7 @@ https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
 3.	Wave UP ↕ DOWN to change color palettes
 4.	Wave LEFT ↔ RIGHT to start recording
 5.	A 3-second countdown begins
-6.	Perform gestures during recording
+6.	Perform any motion you like during recording (5s)
 7.	Watch your motion replay as abstract color art
 8.	Repeat and explore
 ---

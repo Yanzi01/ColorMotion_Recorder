@@ -87,7 +87,7 @@ Instead of showing the real camera image, the system visualizes motion using abs
 python3 -m http.server 8000
 
 Then open:
-http://localhost:8000](http://localhost:8000/record/index.html
+http://localhost:8000/record/index.html
 Allow camera access when prompted.
 
 

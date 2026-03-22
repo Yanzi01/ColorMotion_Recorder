@@ -7,11 +7,6 @@
 https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
 
 >For best performance, use Chrome on a desktop
->
-## Demo Video
-[Download to view the demo video](record/demo/demo_video.mp4)
-
-
 ---
 ## How to Use
 1.	Stand in front of the camera
@@ -23,53 +18,19 @@ https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
 7.	Watch your motion replay as abstract color art
 8.	Repeat and explore
 ---
-
-## Features
-
-- **Fully motion-controlled interaction**
-  - **Added Wave UP & DOWN** -> Change color palette (10 variations)
-  - **Added Wave LEFT & RIGHT** -> Start a 5 seonds recording
-    
-- **Motion design**
-  - Human movement is rendered as a colorful silhouette instead of real video
-  - Filters out small movements such as breathing and lighting noise
-  - Prevents accidental triggers from people walking past the camera
-
-- **Automatic playback**
-  - After recording, the silhouette animation replays automatically
-
-- **Button fallback for accessibility**
-  - A visible **Start Recording** button is always available
-  - Ensures accessibility by allowing others to help start the interaction if the user is unable to perform the wave left & right to start
-  - And act as a backup if motion detection fails to start
-
+## Teaser Video
+  ![record/demo/record.gif](record/demo/record.gif)
+  
 ---
+### Videos
 
-## How It Works
+ **Wave LEFT & RIGHT to Start Recording**  
+  ![Wave left to start](record/demo/wave_left.gif)
 
-### 1. Camera Access (WebRTC)
-The browser requests webcam access using `getUserMedia`.  
-The video stream is processed internally and **never displayed**.
+ **Wave UP & DOWN to Change Color Palette**  
+  ![Wave up to change color](record/demo/wave_up.gif)
 
-### 2. Motion Detection
-Consecutive video frames are compared using pixel-level luminance differences.  
-Only significant changes are treated as motion, filtering out camera noise.
-
-### 3. Silhouette Generation
-Motion pixels are rendered as glowing color particles using the Canvas 2D API.  
-Colors are mapped by distance from the motion center, naturally highlighting hands and fingers.
-
-### 4. Gesture Recognition
-- **Horizontal hand waves** start recording
-- **Vertical hand waves** change color palettes
-
-### 5. Recording & Playback
-- Only the **art canvas** is recorded using the MediaRecorder API
-- UI overlays are rendered on a separate canvas and excluded from recordings
-- Playback runs at normal speed
-
----
-
+--- 
 ### Screenshot
 
 **Live Color Silhouette**
@@ -84,18 +45,6 @@ Colors are mapped by distance from the motion center, naturally highlighting han
 
 ![Instruction panel](record/demo/instruction.png)
 
----
-
-### Demo Videos
-
-- **Recording**
-  [record/demo/record.gif](record/demo/record.gif)
-
-- **Wave LEFT & RIGHT to Start Recording**  
-  ![Wave left to start](record/demo/wave_left.gif)
-
-- **Wave UP & DOWN to Change Color Palette**  
-  ![Wave up to change color](record/demo/wave_up.gif)
 ---
 
 ## How to Install and Run Locally
@@ -128,16 +77,58 @@ Notes
 - The project will not work if opened directly as a local file
 - Use Chrome for best results
 
-⸻
+---
+## Features
 
-Project Context
+- **Fully motion-controlled interaction**
+  - **Added Wave UP & DOWN** -> Change color palette (10 variations)
+  - **Added Wave LEFT & RIGHT** -> Start a 5 seonds recording
+    
+- **Motion design**
+  - Human movement is rendered as a colorful silhouette instead of real video
+  - Filters out small movements such as breathing and lighting noise
+  - Prevents accidental triggers from people walking past the camera
+
+- **Automatic playback**
+  - After recording, the silhouette animation replays automatically
+
+- **Button fallback for accessibility**
+  - A visible **Start Recording** button is always available
+  - Ensures accessibility by allowing others to help start the interaction if the user is unable to perform the wave left & right to start
+  - And act as a backup if motion detection fails to start
+
+---
+## How It Works
+
+### 1. Camera Access (WebRTC)
+The browser requests webcam access using `getUserMedia`.  
+The video stream is processed internally and **never displayed**.
+
+### 2. Motion Detection
+Consecutive video frames are compared using pixel-level luminance differences.  
+Only significant changes are treated as motion, filtering out camera noise.
+
+### 3. Silhouette Generation
+Motion pixels are rendered as glowing color particles using the Canvas 2D API.  
+Colors are mapped by distance from the motion center, naturally highlighting hands and fingers.
+
+### 4. Gesture Recognition
+- **Horizontal hand waves** start recording
+- **Vertical hand waves** change color palettes
+
+### 5. Recording & Playback
+- Only the **art canvas** is recorded using the MediaRecorder API
+- UI overlays are rendered on a separate canvas and excluded from recordings
+- Playback runs at normal speed
+
+---
+## Project Context
 
 This project was created as an interactive digital art, inspired by motion based installations found in WNDR Museum.
 
 The goal is to explore how human movement can become a visual language, transforming everyday movement into digital artwork.
 
 ---
-
 ## Documentation References
 
 - **WebRTC – `navigator.mediaDevices.getUserMedia`**  

@@ -1,4 +1,4 @@
-# 🎨 ColorMotion Recorder
+# ColorMotion Recorder
 
 **ColorMotion Recorder** is an interactive, web-based digital art installation that transforms live movement into a **real-time colored silhouette**.
 
@@ -13,7 +13,7 @@ https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
 
 
 ---
-## 🕹 How to Use
+## How to Use
 1.	Stand in front of the camera
 2.	Move your hand close to the camera
 3.	Wave UP & DOWN to change color palettes

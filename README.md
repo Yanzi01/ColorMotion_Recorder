@@ -2,14 +2,15 @@
 
 **ColorMotion Recorder** is an interactive, web-based digital art installation that transforms live movement into a **real-time colored silhouette**.
 
-## Demo Video
-[Download to view the full demo](record/demo/demo_video.mp4)
-
 ## Try It Live!
 
 https://yanzi01.github.io/ColorMotion_Recorder/record/index.html
 
 >For best performance, use Chrome on a desktop
+>
+## Demo Video
+[Download to view the full demo](record/demo/demo_video.mp4)
+
 
 ---
 ## 🕹 How to Use
